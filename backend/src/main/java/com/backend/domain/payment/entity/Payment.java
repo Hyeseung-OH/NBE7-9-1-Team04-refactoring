@@ -45,8 +45,8 @@ public class Payment extends BaseEntity {
     }
 
     public void complete() {
-        if (this.paymentStatus == PaymentStatus.COMPLETED) {
-            throw new BusinessException(ErrorCode.PAYMENT_ALREADY_COMPLETED);
+        if (this.paymentStatus != PaymentStatus.PENDING) {
+            throw new BusinessException(ErrorCode.PAYMENT_INVALID_STATUS_TRANSITION);
         }
         this.paymentStatus = PaymentStatus.COMPLETED;
     }
@@ -56,8 +56,8 @@ public class Payment extends BaseEntity {
     }
 
     public void cancel() {
-        if(this.paymentStatus == PaymentStatus.CANCELED) {
-            throw new BusinessException(ErrorCode.PAYMENT_ALREADY_CANCELLED);
+        if(this.paymentStatus != PaymentStatus.COMPLETED) {
+            throw new BusinessException(ErrorCode.PAYMENT_NOT_CANCELLABLE);
         }
         this.paymentStatus = PaymentStatus.CANCELED;
     }

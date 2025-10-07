@@ -118,7 +118,7 @@ public class PaymentService {
         }
 
         if (payment.getOrders() != null) {
-            payment.getOrders().setPayment(null);
+            payment.getOrders().removePayment();
         }
 
         paymentRepository.delete(payment);
@@ -134,6 +134,6 @@ public class PaymentService {
         }
 
         paymentRepository.delete(payment);
-        order.setPayment(null);
+        order.removePayment();
     }
 }

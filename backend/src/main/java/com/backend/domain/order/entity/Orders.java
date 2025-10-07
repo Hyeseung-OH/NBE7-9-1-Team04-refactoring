@@ -42,12 +42,12 @@ public class Orders extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private Users user;
 
-    //     Address 엔티티와의 관계 (다대일) - 주소 도메인이 만들어지면 연결
+    // Address 엔티티와의 관계 (다대일) - 주소 도메인이 만들어지면 연결
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "address_id")
     private Address address;
 
-    //     Payment 엔티티와의 관계 (일대일) - 결제 도메인이 만들어지면 연결
+    // Payment 엔티티와의 관계 (일대일) - 결제 도메인이 만들어지면 연결
     @OneToOne(mappedBy = "orders", fetch = FetchType.LAZY)
     private Payment payment;
 
@@ -56,6 +56,10 @@ public class Orders extends BaseEntity {
             this.orderDetails.add(detail);
             detail.setOrder(this);
         }
+    }
+
+    public void removePayment() {
+        this.payment = null;
     }
 
     public Orders(Users user, int orderAmount, OrderStatus orderStatus, Address address) {
