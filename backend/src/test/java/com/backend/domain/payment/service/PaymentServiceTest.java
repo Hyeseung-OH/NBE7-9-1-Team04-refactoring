@@ -195,10 +195,11 @@ class PaymentServiceTest {
         Orders order = orderRepository.save(new Orders(savedUser, 10000, OrderStatus.CANCELED, savedAddress));
 
         Payment payment = new Payment(10000, PaymentMethod.CARD, order);
-        payment.cancel();
+        payment.complete(); // 먼저 완료 상태로 변경
+        payment.cancel();   // 그 다음 취소
         paymentRepository.save(payment);
 
-        order.setPayment(payment);
+        order.updatePayment(payment);
 
         // When
         paymentService.deletePaymentByOrder(order, new UserDto(savedUser));
@@ -233,7 +234,7 @@ class PaymentServiceTest {
         payment.complete();
         paymentRepository.save(payment);
 
-        order.setPayment(payment);
+        order.updatePayment(payment);
 
         // When & Then
         BusinessException ex = assertThrows(

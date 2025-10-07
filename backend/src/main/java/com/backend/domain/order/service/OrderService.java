@@ -125,7 +125,7 @@ public class OrderService {
         }
 
         // 5. 상태 업데이트
-        order.setOrderStatus(newStatus);
+        order.updateOrderStatus(newStatus);
     }
 
     public Optional<Orders> getOrderById(Long orderId) {
@@ -207,7 +207,7 @@ public class OrderService {
         }
 
         // 6. 주문 상태를 CANCELED로 변경
-        order.setOrderStatus(OrderStatus.CANCELED);
+        order.updateOrderStatus(OrderStatus.CANCELED);
 
         return order;
     }
