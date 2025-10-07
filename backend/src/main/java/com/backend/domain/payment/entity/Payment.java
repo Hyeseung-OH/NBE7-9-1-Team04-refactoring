@@ -32,7 +32,8 @@ public class Payment extends BaseEntity {
     private PaymentStatus paymentStatus;
 
     // 주문 엔티티와 연결 관계, OneToOne
-    @OneToOne(mappedBy = "payment", fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "order_id")
     private Orders orders;
 
     @Builder

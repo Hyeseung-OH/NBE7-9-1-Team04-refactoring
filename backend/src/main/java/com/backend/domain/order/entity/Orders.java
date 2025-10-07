@@ -49,8 +49,7 @@ public class Orders extends BaseEntity {
     private Address address;
 
     //     Payment 엔티티와의 관계 (일대일) - 결제 도메인이 만들어지면 연결
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "payment_id")
+    @OneToOne(mappedBy = "orders", fetch = FetchType.LAZY)
     private Payment payment;
 
     public void addOrderDetails(List<OrderDetails> orderDetails) {
