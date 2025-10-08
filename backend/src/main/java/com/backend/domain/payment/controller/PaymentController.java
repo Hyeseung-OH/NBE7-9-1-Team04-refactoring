@@ -45,7 +45,7 @@ public class PaymentController {
     )
     @GetMapping("/{paymentId}")
     public ResponseEntity<ApiResponse<PaymentInquiryResponse>> getPayment(
-            @Valid @PathVariable Long paymentId
+            @PathVariable Long paymentId
     ) throws Exception {
         UserDto currentUser = rq.getUser();
         PaymentInquiryResponse response = paymentService.getPayment(paymentId, currentUser);
@@ -60,7 +60,7 @@ public class PaymentController {
     )
     @PutMapping("/{paymentId}/cancel")
     public ResponseEntity<ApiResponse<PaymentCancelResponse>> cancelPayment(
-            @Valid @PathVariable Long paymentId
+            @PathVariable Long paymentId
     ) throws Exception {
         UserDto currentUser = rq.getUser();
         PaymentCancelResponse response = paymentService.cancelPayment(paymentId, currentUser);
@@ -75,7 +75,7 @@ public class PaymentController {
     )
     @DeleteMapping("/{paymentId}/delete")
     public ResponseEntity<ApiResponse<Void>> deletePayment(
-            @Valid @PathVariable Long paymentId
+            @PathVariable Long paymentId
     ) throws Exception {
         UserDto currentUser = rq.getUser();
         paymentService.deletePayment(paymentId, currentUser);
