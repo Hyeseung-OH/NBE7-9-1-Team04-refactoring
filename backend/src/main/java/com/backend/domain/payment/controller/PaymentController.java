@@ -11,6 +11,7 @@ import com.backend.global.rq.Rq;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -45,7 +46,7 @@ public class PaymentController {
     )
     @GetMapping("/{paymentId}")
     public ResponseEntity<ApiResponse<PaymentInquiryResponse>> getPayment(
-            @PathVariable Long paymentId
+            @PathVariable @Positive(message = "결제 ID는 양수여야 합니다.") Long paymentId
     ) throws Exception {
         UserDto currentUser = rq.getUser();
         PaymentInquiryResponse response = paymentService.getPayment(paymentId, currentUser);
@@ -60,7 +61,7 @@ public class PaymentController {
     )
     @PutMapping("/{paymentId}/cancel")
     public ResponseEntity<ApiResponse<PaymentCancelResponse>> cancelPayment(
-            @PathVariable Long paymentId
+            @PathVariable @Positive(message = "결제 ID는 양수여야 합니다.") Long paymentId
     ) throws Exception {
         UserDto currentUser = rq.getUser();
         PaymentCancelResponse response = paymentService.cancelPayment(paymentId, currentUser);
@@ -75,7 +76,7 @@ public class PaymentController {
     )
     @DeleteMapping("/{paymentId}/delete")
     public ResponseEntity<ApiResponse<Void>> deletePayment(
-            @PathVariable Long paymentId
+            @PathVariable @Positive(message = "결제 ID는 양수여야 합니다.") Long paymentId
     ) throws Exception {
         UserDto currentUser = rq.getUser();
         paymentService.deletePayment(paymentId, currentUser);
