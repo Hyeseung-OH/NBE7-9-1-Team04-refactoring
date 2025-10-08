@@ -13,6 +13,7 @@ import com.backend.domain.payment.repository.PaymentRepository;
 import com.backend.domain.user.user.dto.UserDto;
 import com.backend.global.exception.BusinessException;
 import com.backend.global.response.ErrorCode;
+import jakarta.persistence.OptimisticLockException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,23 +32,26 @@ public class PaymentService {
     // 결제 요청
     @Transactional
     public PaymentCreateResponse createPayment(PaymentCreateRequest request, UserDto currentUser) {
-        Orders orders = orderRepository.findByOrderIdAndUser_UserId(request.orderId(), currentUser.userId())
-                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_ORDER));
+        try {
+            Orders orders = orderRepository.findByOrderIdAndUser_UserId(request.orderId(), currentUser.userId())
+                    .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_ORDER));
 
-        if (orders.getOrderAmount() != request.paymentAmount()) {
-            throw new BusinessException(ErrorCode.PAYMENT_AMOUNT_MISMATCH);
+            if (orders.getOrderAmount() != request.paymentAmount()) {
+                throw new BusinessException(ErrorCode.PAYMENT_AMOUNT_MISMATCH);
+            }
+
+            if (request.paymentMethod() == null || request.paymentMethod() != PaymentMethod.CARD) {
+                throw new BusinessException(ErrorCode.INVALID_PAYMENT_METHOD);
+            }
+
+            if (paymentRepository.existsByOrders(orders)) {
+                throw new BusinessException(ErrorCode.PAYMENT_ALREADY_COMPLETED);
+            }
+
+            return paymentRetry.processPaymentWithRetry(request, orders);
+        } catch (OptimisticLockException e) {
+            throw new BusinessException(ErrorCode.CONCURRENT_PAYMENT_DETECTED);
         }
-
-        if (request.paymentMethod() == null || request.paymentMethod() != PaymentMethod.CARD) {
-            throw new BusinessException(ErrorCode.INVALID_PAYMENT_METHOD);
-        }
-
-        boolean completePayment = paymentRepository.existsByOrdersAndPaymentStatus(orders, PaymentStatus.COMPLETED);
-        if (completePayment) {
-            throw new BusinessException(ErrorCode.PAYMENT_ALREADY_COMPLETED);
-        }
-
-        return paymentRetry.processPaymentWithRetry(request, orders);
     }
 
     // 결제 단건 조회
@@ -118,7 +122,7 @@ public class PaymentService {
         }
 
         if (payment.getOrders() != null) {
-            payment.getOrders().setPayment(null);
+            payment.getOrders().removePayment();
         }
 
         paymentRepository.delete(payment);
@@ -134,6 +138,6 @@ public class PaymentService {
         }
 
         paymentRepository.delete(payment);
-        order.setPayment(null);
+        order.removePayment();
     }
 }

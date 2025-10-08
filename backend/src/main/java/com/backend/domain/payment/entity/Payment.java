@@ -11,11 +11,23 @@ import lombok.*;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
+@Table(
+        name = "payment",
+        uniqueConstraints = {
+                @UniqueConstraint(
+                        name = "uk_order_payment",
+                        columnNames = {"order_id"}
+                )
+        }
+)
 public class Payment extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     // 결제 테이블 키
     private Long paymentId;
+
+    @Version
+    private Long version;
 
     // 결제 금액, NOT NULL
     @Column(nullable = false)
@@ -32,7 +44,8 @@ public class Payment extends BaseEntity {
     private PaymentStatus paymentStatus;
 
     // 주문 엔티티와 연결 관계, OneToOne
-    @OneToOne(mappedBy = "payment", fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "order_id")
     private Orders orders;
 
     @Builder
@@ -44,8 +57,8 @@ public class Payment extends BaseEntity {
     }
 
     public void complete() {
-        if (this.paymentStatus == PaymentStatus.COMPLETED) {
-            throw new BusinessException(ErrorCode.PAYMENT_ALREADY_COMPLETED);
+        if (this.paymentStatus != PaymentStatus.PENDING) {
+            throw new BusinessException(ErrorCode.PAYMENT_INVALID_STATUS_TRANSITION);
         }
         this.paymentStatus = PaymentStatus.COMPLETED;
     }
@@ -55,8 +68,8 @@ public class Payment extends BaseEntity {
     }
 
     public void cancel() {
-        if(this.paymentStatus == PaymentStatus.CANCELED) {
-            throw new BusinessException(ErrorCode.PAYMENT_ALREADY_CANCELLED);
+        if(this.paymentStatus != PaymentStatus.COMPLETED) {
+            throw new BusinessException(ErrorCode.PAYMENT_NOT_CANCELLABLE);
         }
         this.paymentStatus = PaymentStatus.CANCELED;
     }

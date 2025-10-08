@@ -19,7 +19,6 @@ import java.util.List;
  */
 @Entity
 @Getter
-@Setter
 @Table(name = "orders")
 @NoArgsConstructor
 public class Orders extends BaseEntity {
@@ -27,6 +26,9 @@ public class Orders extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long orderId;
+
+    @Version
+    private Long version;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -43,14 +45,13 @@ public class Orders extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private Users user;
 
-    //     Address 엔티티와의 관계 (다대일) - 주소 도메인이 만들어지면 연결
+    // Address 엔티티와의 관계 (다대일) - 주소 도메인이 만들어지면 연결
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "address_id")
     private Address address;
 
-    //     Payment 엔티티와의 관계 (일대일) - 결제 도메인이 만들어지면 연결
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "payment_id")
+    // Payment 엔티티와의 관계 (일대일) - 결제 도메인이 만들어지면 연결
+    @OneToOne(mappedBy = "orders", fetch = FetchType.LAZY)
     private Payment payment;
 
     public void addOrderDetails(List<OrderDetails> orderDetails) {
@@ -58,6 +59,18 @@ public class Orders extends BaseEntity {
             this.orderDetails.add(detail);
             detail.setOrder(this);
         }
+    }
+
+    public void removePayment() {
+        this.payment = null;
+    }
+
+    public void updatePayment(Payment payment) {
+        this.payment = payment;
+    }
+
+    public void updateOrderStatus(OrderStatus orderStatus) {
+        this.orderStatus = orderStatus;
     }
 
     public Orders(Users user, int orderAmount, OrderStatus orderStatus, Address address) {

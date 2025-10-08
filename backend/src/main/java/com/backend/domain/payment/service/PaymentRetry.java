@@ -47,8 +47,8 @@ public class PaymentRetry {
         Payment payment = paymentFactory.createCompletedPayment(request, orders);
         Payment savePayment = paymentRepository.save(payment);
 
-        orders.setPayment(savePayment);
-        orders.setOrderStatus(OrderStatus.PAID); // 직접 상태 변경
+        orders.updatePayment(savePayment);
+        orders.updateOrderStatus(OrderStatus.PAID);
         orderRepository.save(orders);
 
         return new PaymentCreateResponse(savePayment);
@@ -65,7 +65,7 @@ public class PaymentRetry {
         Payment failedPayment = paymentFactory.createFailedPayment(request, orders);
         paymentRepository.save(failedPayment);
 
-        orders.setPayment(failedPayment);
+        orders.updatePayment(failedPayment);
         orderRepository.save(orders);
 
         throw new BusinessException(ErrorCode.PAYMENT_FAILED);
