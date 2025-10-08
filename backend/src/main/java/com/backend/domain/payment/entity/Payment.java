@@ -11,6 +11,15 @@ import lombok.*;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
+@Table(
+        name = "payment",
+        uniqueConstraints = {
+                @UniqueConstraint(
+                        name = "uk_order_payment",
+                        columnNames = {"order_id"}
+                )
+        }
+)
 public class Payment extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
