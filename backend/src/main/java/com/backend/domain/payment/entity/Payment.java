@@ -26,6 +26,9 @@ public class Payment extends BaseEntity {
     // 결제 테이블 키
     private Long paymentId;
 
+    @Version
+    private Long version;
+
     // 결제 금액, NOT NULL
     @Column(nullable = false)
     private int paymentAmount;

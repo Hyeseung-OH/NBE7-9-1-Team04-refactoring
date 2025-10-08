@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 
 public record PaymentCancelResponse (
         Long paymentId,
+        Long orderId,
         int paymentAmount,
         PaymentMethod paymentMethod,
         PaymentStatus paymentStatus,
@@ -17,6 +18,7 @@ public record PaymentCancelResponse (
     public PaymentCancelResponse(Payment payment) {
         this(
                 payment.getPaymentId(),
+                payment.getOrders().getOrderId(),
                 payment.getPaymentAmount(),
                 payment.getPaymentMethod(),
                 payment.getPaymentStatus(),

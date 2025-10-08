@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 @Builder
 public record PaymentCreateResponse(
         Long paymentId,
+        Long orderId,
         int paymentAmount,
         PaymentMethod paymentMethod,
         PaymentStatus paymentStatus,
@@ -22,6 +23,7 @@ public record PaymentCreateResponse(
     public PaymentCreateResponse(Payment payment) {
         this(
                 payment.getPaymentId(),
+                payment.getOrders().getOrderId(),
                 payment.getPaymentAmount(),
                 payment.getPaymentMethod(),
                 payment.getPaymentStatus(),
