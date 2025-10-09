@@ -74,7 +74,7 @@ public class PaymentService {
 
     // 결제 단건 취소 - controller
     @Transactional
-    public PaymentCancelResponse cancelPayment(@Valid Long paymentId, UserDto currentUser) {
+    public PaymentCancelResponse cancelPayment(Long paymentId, UserDto currentUser) {
         if (paymentId == null || paymentId <= 0) {
             throw new BusinessException(ErrorCode.NOT_FOUND_PAYMENT);
         }
@@ -109,7 +109,7 @@ public class PaymentService {
 
     // 취소된 결제 내역 삭제 - controller
     @Transactional
-    public void deletePayment(@Valid Long paymentId, UserDto currentUser) {
+    public void deletePayment(Long paymentId, UserDto currentUser) {
         if (paymentId == null || paymentId <= 0) {
             throw new BusinessException(ErrorCode.NOT_FOUND_PAYMENT);
         }
