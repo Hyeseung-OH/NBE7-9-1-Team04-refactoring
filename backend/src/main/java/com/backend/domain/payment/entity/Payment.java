@@ -64,6 +64,9 @@ public class Payment extends BaseEntity {
     }
 
     public void fail() {
+        if (this.paymentStatus != PaymentStatus.PENDING) {
+            throw new BusinessException(ErrorCode.PAYMENT_INVALID_STATUS_TRANSITION);
+        }
         this.paymentStatus = PaymentStatus.FAILED;
     }
 
